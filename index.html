@@ -47,7 +47,7 @@
         }
         .full-width { grid-column: span 2; }
         label { font-size: 0.85rem; color: var(--oxford-blue); font-weight: bold; margin-bottom: 5px; display: block; }
-        select, input {
+        select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
@@ -88,7 +88,7 @@
         .btn-start { background: var(--oxford-blue); color: white; }
         .btn-finish { background: var(--success); color: white; display: none; }
         .btn-disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
-        .btn-drive { background: var(--drive-blue); color: white; margin-top: 15px; }
+        .btn-download { background: #6366f1; color: white; margin-top: 15px; }
         .btn-retry { background: var(--danger); color: white; }
 
         #finalSuccessMessage { display: none; padding: 20px; }
@@ -103,7 +103,7 @@
         
         <div class="student-inputs">
             <div class="full-width">
-                <label>1. Select your Class:</label>
+                <label>1. Select your Class / Selecciona tu curso:</label>
                 <select id="sClass" onchange="updateStudentList()">
                     <option value="">-- Choose Class --</option>
                     <option value="7A">7° A</option>
@@ -112,7 +112,7 @@
                 </select>
             </div>
             <div class="full-width">
-                <label>2. Select your Name:</label>
+                <label>2. Select your Name / Selecciona tu nombre:</label>
                 <select id="studentName">
                     <option value="">-- Select Class First --</option>
                 </select>
@@ -132,8 +132,8 @@
 
         <div class="timer-box" id="timerDisplay">00:00</div>
         
-        <button id="startBtn" class="btn-start" onclick="initTest()">🎤 Start Recording</button>
-        <button id="finishBtn" class="btn-finish btn-disabled" disabled onclick="stopAndFinish()">✔ Finish & Review</button>
+        <button id="startBtn" class="btn-start" onclick="initTest()">🎤 Start Recording / Empezar</button>
+        <button id="finishBtn" class="btn-finish btn-disabled" disabled onclick="stopAndFinish()">✔ Finish & Review / Terminar</button>
         <p id="timerHint" style="font-size: 0.85rem; color: #64748b; display: none;">Talk until the timer reaches 01:30</p>
     </div>
 
@@ -147,15 +147,17 @@
                 <button class="btn-retry" onclick="location.reload()">✖ Delete and Try Again</button>
             </div>
 
-            <button id="driveBtn" class="btn-drive" onclick="uploadToDrive()">Confirm & Send to Teacher</button>
-            <div id="status" style="font-weight: bold; margin-top: 10px;"></div>
+            <button id="downloadBtn" class="btn-download" onclick="downloadAudio()">⬇ Download MP3 / Descargar archivo</button>
+            <p style="font-size: 0.9rem; color: var(--oxford-blue); font-weight: bold; margin-top: 10px;">
+                ⚠️ IMPORTANTE: Una vez descargado, sube el archivo a Google Classroom.
+            </p>
         </div>
 
         <div id="finalSuccessMessage">
             <div class="icon-check">✓</div>
-            <h2>WELL DONE!</h2>
-            <p>Your oral task has been sent to your teacher.</p>
-            <button style="background: #64748b; color:white; width: auto; padding: 12px 30px;" onclick="window.print()">Save Receipt</button>
+            <h2>FILE DOWNLOADED!</h2>
+            <p>Ahora ve a <b>Google Classroom</b> y sube el archivo descargado a la tarea.</p>
+            <button style="background: #64748b; color:white; width: auto; padding: 12px 30px;" onclick="location.reload()">Record Another</button>
         </div>
     </div>
 </div>
@@ -215,7 +217,7 @@ async function initTest() {
                 document.getElementById('timerHint').innerText = "Perfect length! You can finish now.";
             }
         }, 1000);
-    } catch (err) { alert("Mic error: Please allow access."); }
+    } catch (err) { alert("Error de micrófono: Por favor permite el acceso."); }
 }
 
 function stopAndFinish() {
@@ -228,34 +230,28 @@ function stopAndFinish() {
     if(mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(t => t.stop());
 }
 
-async function uploadToDrive() {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYJh8YRfdxdqwCo4cnU6hVUsWu4NnwJQtPV5yeVtUn-CCytM7uN8L8Ts78QLBKqqWPvA/exec";
-    const driveBtn = document.getElementById('driveBtn');
-    driveBtn.disabled = true;
-    document.getElementById('status').textContent = "⏳ Uploading to teacher's Drive...";
-
-    const reader = new FileReader();
-    reader.readAsDataURL(audioBlob);
-    reader.onloadend = async () => {
-        const base64data = reader.result.split(',')[1];
-        try {
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({
-                    base64: base64data,
-                    filename: `${document.getElementById('sClass').value}_${document.getElementById('studentName').value}.mp3`
-                })
-            });
-            setTimeout(() => {
-                document.getElementById('submissionControls').style.display = 'none';
-                document.getElementById('finalSuccessMessage').style.display = 'block';
-            }, 2000);
-        } catch (e) {
-            alert("Error. Please try again.");
-            driveBtn.disabled = false;
-        }
-    };
+function downloadAudio() {
+    const studentName = document.getElementById('studentName').value;
+    const studentClass = document.getElementById('sClass').value;
+    // Formatear nombre para el archivo: Reemplazar espacios por guiones bajos
+    const formattedName = studentName.replace(/ /g, '_');
+    const fileName = `${studentClass}_${formattedName}_OralTask2.mp3`;
+    
+    const url = URL.createObjectURL(audioBlob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Pequeño retardo para asegurar la descarga antes de cambiar la vista
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        document.getElementById('submissionControls').style.display = 'none';
+        document.getElementById('finalSuccessMessage').style.display = 'block';
+    }, 500);
 }
 </script>
 </body>
