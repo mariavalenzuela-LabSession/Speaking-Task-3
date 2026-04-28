@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORAL TASK II - CSI Assessment</title>
+    <title>ORAL TASK II - Water Sports Assessment</title>
     <style>
         :root {
             --oxford-blue: #002147;
@@ -43,14 +43,18 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 20px;
+            text-align: left;
         }
         .full-width { grid-column: span 2; }
-        input {
-            padding: 14px;
+        label { font-size: 0.85rem; color: var(--oxford-blue); font-weight: bold; margin-bottom: 5px; display: block; }
+        select, input {
+            width: 100%;
+            padding: 12px;
             border: 2px solid #e2e8f0;
             border-radius: 10px;
             font-size: 1rem;
             outline: none;
+            background-color: white;
         }
         .prep-box {
             background: #f0f4f8;
@@ -60,14 +64,13 @@
             text-align: left;
             margin-bottom: 20px;
         }
-        .prep-box h3 { margin-top: 0; color: var(--oxford-blue); font-size: 1.1rem; }
         .main-task-img {
             width: 100%;
             border-radius: 10px;
             margin: 15px 0;
             border: 1px solid #ddd;
         }
-        .timer-box { font-size: 3rem; font-weight: bold; color: var(--oxford-blue); margin: 20px 0; }
+        .timer-box { font-size: 3.5rem; font-weight: bold; color: var(--oxford-blue); margin: 20px 0; }
         .recording .timer-box { color: var(--danger); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
         
@@ -83,55 +86,65 @@
             transition: 0.3s;
         }
         .btn-start { background: var(--oxford-blue); color: white; }
-        .btn-next { background: var(--oxford-gold); color: white; display: none; }
         .btn-finish { background: var(--success); color: white; display: none; }
         .btn-disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
         .btn-drive { background: var(--drive-blue); color: white; margin-top: 15px; }
-        .btn-retry { background: var(--danger); color: white; font-size: 0.9rem; }
+        .btn-retry { background: var(--danger); color: white; }
 
-        #finalSuccessMessage { display: none; padding: 20px; text-align: center; }
-        .icon-check { font-size: 5rem; color: var(--success); margin-bottom: 15px; }
+        #finalSuccessMessage { display: none; padding: 20px; }
+        .icon-check { font-size: 5rem; color: var(--success); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="card no-print" id="setupUI">
-        <div class="header-logo">ORAL TASK II</div>
+    <div class="card" id="setupUI">
+        <div class="header-logo">ORAL TASK II: WATER SPORTS</div>
         
         <div class="student-inputs">
-            <input type="text" id="firstName" placeholder="First Name">
-            <input type="text" id="lastName" placeholder="Last Name">
-            <input type="text" id="sClass" class="full-width" placeholder="Class (e.g. 5th A)">
+            <div class="full-width">
+                <label>1. Select your Class:</label>
+                <select id="sClass" onchange="updateStudentList()">
+                    <option value="">-- Choose Class --</option>
+                    <option value="7A">7° A</option>
+                    <option value="7B">7° B</option>
+                    <option value="7C">7° C</option>
+                </select>
+            </div>
+            <div class="full-width">
+                <label>2. Select your Name:</label>
+                <select id="studentName">
+                    <option value="">-- Select Class First --</option>
+                </select>
+            </div>
         </div>
 
-        <div class="prep-box" id="prepBox">
-            <h3>🌊 Water Sports Task</h3>
-            <p style="font-size: 0.9rem; color: #475569;">
-                1. Look at the pictures below.<br>
-                2. Identify the different water sports.<br>
-                3. Say which one you <b>like</b> and <b>don't like</b> (with reasons).<br>
-                4. Give full answers. Talk for <b>1:30 - 2:00 minutes</b>.
+        <div class="prep-box">
+            <h3>🌊 Task Instructions:</h3>
+            <p style="font-size: 0.95rem; line-height: 1.4;">
+                • Look at the pictures.<br>
+                • Identify the water sports.<br>
+                • Say which one you <b>like</b> and <b>don't like</b> + reasons.<br>
+                • Minimum time: <b>1:30 minutes</b>.
             </p>
             <img src="https://raw.githubusercontent.com/mariavalenzuela-LabSession/Speaking-Task-3/bf1aed491e2dccecdaa4e4d79d53c717393a9d4d/Captura%20de%20pantalla%202026-04-24%20a%20la(s)%2012.45.19.png" class="main-task-img" alt="Water Sports">
         </div>
 
         <div class="timer-box" id="timerDisplay">00:00</div>
         
-        <button id="startBtn" class="btn-start" onclick="initTest()">🎤 Start Assessment</button>
+        <button id="startBtn" class="btn-start" onclick="initTest()">🎤 Start Recording</button>
         <button id="finishBtn" class="btn-finish btn-disabled" disabled onclick="stopAndFinish()">✔ Finish & Review</button>
-        <p id="timerHint" style="font-size: 0.85rem; color: #64748b; display: none;">Minimum time: 1:30</p>
+        <p id="timerHint" style="font-size: 0.85rem; color: #64748b; display: none;">Talk until the timer reaches 01:30</p>
     </div>
 
     <div id="reportArea" class="card" style="display:none;">
         <div id="submissionControls">
-            <h2 style="color: var(--oxford-blue);">Evaluation Report</h2>
-            <p style="text-align: left;"><strong>Student:</strong> <span id="repName"></span></p>
-            <p style="text-align: left;"><strong>Class:</strong> <span id="repClass"></span></p>
+            <h2 style="color: var(--oxford-blue);">Review your Task</h2>
+            <p><strong>Student:</strong> <span id="repName"></span> | <strong>Class:</strong> <span id="repClass"></span></p>
             
             <div style="background: #f8fafc; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 12px; margin: 20px 0;">
-                <audio id="finalAudio" controls style="width: 100%; margin-bottom: 10px;"></audio>
-                <button class="btn-retry" onclick="location.reload()">✖ Delete & Record Again</button>
+                <audio id="finalAudio" controls style="width: 100%; margin-bottom: 15px;"></audio>
+                <button class="btn-retry" onclick="location.reload()">✖ Delete and Try Again</button>
             </div>
 
             <button id="driveBtn" class="btn-drive" onclick="uploadToDrive()">Confirm & Send to Teacher</button>
@@ -140,22 +153,40 @@
 
         <div id="finalSuccessMessage">
             <div class="icon-check">✓</div>
-            <h2>TASK COMPLETED</h2>
-            <p>Assessment sent successfully.</p>
-            <button style="background: #64748b; color:white; width: auto; padding: 12px 30px;" onclick="window.print()">Print Report</button>
+            <h2>WELL DONE!</h2>
+            <p>Your oral task has been sent to your teacher.</p>
+            <button style="background: #64748b; color:white; width: auto; padding: 12px 30px;" onclick="window.print()">Save Receipt</button>
         </div>
     </div>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYJh8YRfdxdqwCo4cnU6hVUsWu4NnwJQtPV5yeVtUn-CCytM7uN8L8Ts78QLBKqqWPvA/exec";
+const studentsData = {
+    "7A": ["Abarca Nuñez Florencia Ayelén", "Alfaro Cuevas Agustina Paz", "Argote Luza Amanda Leonor", "Arias Alegría Gustavo León", "Barrera León Antonia Paz", "Barriga Fernández Alex Eduardo", "Castillo Herrera Javier David", "Castro Mincone Emilia Alessandra", "Celis Canales Santiago", "Cortés Cabello Clemente Nicolás", "Del Río Fernández Santiago Isaac", "Fuentes Ramírez Alejandro Ignacio", "González Arriagada Joaquín Alonso", "González Yáñez Lorenzo Tomás", "Guerrero Bustamante Vicente", "Hinojosa Carrasco Victoria Antonia", "Hiplan Godoy Rafaella Francisca", "Iglesias Guerrero Maite Agustina", "Jiménez Monsalves Laura Elena", "Méndez Fernández Violeta Millaray", "Montenegro Uribarri Agustina Paz", "Muñoz Espinoza Mariano Emilio", "Neira Orellana Nicolás Andrés", "Norambuena Garcés Matías Clemente", "Núñez Zamora Florencia Antonia", "Pérez Escobar Emilia Andrea", "Ramírez Cartagena Mateo Ignacio", "Ramírez Oliva Amaro Andrés", "Reffer Horvath Ignacio Javier", "Retamal Leiva Maximiliano Antonio", "Reyes Bravo María Vicenta", "Reyes Urrea Alicia Cristina", "Sánchez Ramírez Cristobal Guillermo", "Veizaga Ruiz Darío Alonso", "Véliz Cortés Josefina Viviana"],
+    "7B": ["Álvarez de Araya Almarza Bruno Ignacio", "Araya Espinoza Bárbara Yudich", "Araya Seguel Javier Ignacio", "Arias Alegría Felipe Roberto", "Arriaza Marsh Paz Emilia", "Barbaste Escalante Emma Leonor", "Barrera Jaque Trinidad Ignacia", "Calderón Palma José Agustín", "Campusano Pérez Francisca Almudena", "Castro Jara Matías Ignacio", "Contreras Arriagada Juan Pablo", "Cortés Díaz Joaquín Alonso", "Díaz Cortés Gaspar Ignacio", "Espinoza Cornejo Fernanda Isidora", "Figueroa Cárdenas Rafaela Sofía", "Figueroa Salazar Cristóbal Javier", "Hernández Leiva Emiliana Catalina", "Lasserre Rodriguez Clara Belén", "Maira Péndola Facundo Alfonso", "Martini Sutherland Isabella Francesca Rosetta", "Moraga Martínez Fernanda Paz", "Neyra Anabalón Vicente Alonso", "Olea Leiva Elisa Magdalena", "Olivares Sánchez Pablo Ignacio", "Orellana García Cristóbal Felipe", "Oviedo Obreque Camila Antonia", "Pacheco Palma Matías Ignacio", "Palma Péndola Gonzalo Alonzo", "Pérez Madariaga Nicolás Maximiliano", "Reyes Briones Lucas Javier", "Saldivia San Martín Emilio Alberto", "Urrutia González Amanda Florencia", "Valdenegro Román Cristóbal Tomás", "Valdés Vergara Gastón Emilio", "Valverde Véliz Santiago Alonso", "Vásquez Reyes María José Valentina", "Wood Corrales Andrew Benjamín Buchanan"],
+    "7C": ["Acevedo Gutiérrez Agustín Emilio", "Aliaga Pennanen José Tomás Antonio", "Arévalo Jara Carla Ignacia", "Arrieta Angulo Felipe Esteban", "Blanco Contreras María Isidora", "Burgos Salazar Agustín Tomás", "Cano Morgado Rafael Elías", "Chávez González Elisa Isabella", "Contreras Ramos Helena Paz", "Dehnhardt Berríos Tomás Leon", "Dinamarca Aránguiz Rebeca Elena", "Flores Ravera Amalia Lourdes", "Lema Carrasco María Jesús", "Loaiza Vistoso María Isabel", "Mallea Aldunate Constanza Paz", "Marrujo Pardo Gisselle Andrea", "Montenegro Vargas Kiara", "Núñez Henríquez Guadalupe Ignacia", "Núñez Zapata Olivia Paz", "Ogaz Klauser Rosario Paz", "Orellana Beltrán Felipe Andrés", "Pinto Decencier Maximiliano Alonso", "Ponce Del Canto María Laura", "Ponce Quintanilla Laura Victoria", "Quezada Ibarra Eduardo Gabriel", "Reyes Alarcón Aimee Sarahi", "Román Burgos Monserrat Catalina", "Ruz Reyes Tomás Benjamín", "Sánchez Rodríguez Facundo León", "Squella Troncoso Agustín Enrique", "Suazo Miranda Clemente León", "Ulloa Vega Emilia Ignacia", "Vega Paz Catalina Renata", "Vergara Rojas Mariana Almendra Lucía", "Vines Zúñiga Edmundo André", "Yaksic Rivera Savka Milena", "Yáñez Saavedra Francisca Isidora"]
+};
+
+function updateStudentList() {
+    const classSel = document.getElementById('sClass').value;
+    const studentSel = document.getElementById('studentName');
+    studentSel.innerHTML = '<option value="">-- Select your Name --</option>';
+    
+    if(classSel && studentsData[classSel]) {
+        studentsData[classSel].forEach(name => {
+            let opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            studentSel.appendChild(opt);
+        });
+    }
+}
 
 let mediaRecorder, chunks = [], timerInt, seconds = 0, audioBlob;
 
 async function initTest() {
-    if(!document.getElementById('firstName').value || !document.getElementById('lastName').value) {
-        return alert("Please enter your First and Last Name!");
-    }
+    if(!document.getElementById('studentName').value) return alert("Please select your name!");
+    
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
@@ -176,23 +207,21 @@ async function initTest() {
             seconds++;
             let m = Math.floor(seconds/60).toString().padStart(2,'0'), s = (seconds%60).toString().padStart(2,'0');
             document.getElementById('timerDisplay').textContent = `${m}:${s}`;
-            
-            // Enable Finish button after 90 seconds (1:30)
             if(seconds >= 90) {
                 const btn = document.getElementById('finishBtn');
                 btn.disabled = false;
                 btn.classList.remove('btn-disabled');
                 document.getElementById('timerHint').style.color = "#10b981";
-                document.getElementById('timerHint').innerText = "Minimum time reached!";
+                document.getElementById('timerHint').innerText = "Perfect length! You can finish now.";
             }
         }, 1000);
-    } catch (err) { alert("Mic error: Please allow access to record."); }
+    } catch (err) { alert("Mic error: Please allow access."); }
 }
 
 function stopAndFinish() {
     mediaRecorder.stop();
     clearInterval(timerInt);
-    document.getElementById('repName').textContent = `${document.getElementById('lastName').value}, ${document.getElementById('firstName').value}`;
+    document.getElementById('repName').textContent = document.getElementById('studentName').value;
     document.getElementById('repClass').textContent = document.getElementById('sClass').value;
     document.getElementById('setupUI').style.display = 'none';
     document.getElementById('reportArea').style.display = 'block';
@@ -200,10 +229,10 @@ function stopAndFinish() {
 }
 
 async function uploadToDrive() {
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYJh8YRfdxdqwCo4cnU6hVUsWu4NnwJQtPV5yeVtUn-CCytM7uN8L8Ts78QLBKqqWPvA/exec";
     const driveBtn = document.getElementById('driveBtn');
     driveBtn.disabled = true;
-    document.getElementById('status').textContent = "⏳ Sending to Drive...";
-    document.getElementById('status').style.color = "orange";
+    document.getElementById('status').textContent = "⏳ Uploading to teacher's Drive...";
 
     const reader = new FileReader();
     reader.readAsDataURL(audioBlob);
@@ -215,7 +244,7 @@ async function uploadToDrive() {
                 mode: "no-cors",
                 body: JSON.stringify({
                     base64: base64data,
-                    filename: `${document.getElementById('lastName').value}_${document.getElementById('firstName').value}_${document.getElementById('sClass').value}.mp3`
+                    filename: `${document.getElementById('sClass').value}_${document.getElementById('studentName').value}.mp3`
                 })
             });
             setTimeout(() => {
@@ -223,7 +252,7 @@ async function uploadToDrive() {
                 document.getElementById('finalSuccessMessage').style.display = 'block';
             }, 2000);
         } catch (e) {
-            alert("Upload error. Please try again.");
+            alert("Error. Please try again.");
             driveBtn.disabled = false;
         }
     };
