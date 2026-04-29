@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORAL TASK II - Water Sports Assessment</title>
+    <title>Speaking Task 3</title>
     <style>
         :root {
             --oxford-blue: #002147;
@@ -88,7 +88,7 @@
         .btn-start { background: var(--oxford-blue); color: white; }
         .btn-finish { background: var(--success); color: white; display: none; }
         .btn-disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
-        .btn-download { background: #6366f1; color: white; margin-top: 15px; }
+        .btn-drive { background: var(--drive-blue); color: white; margin-top: 15px; }
         .btn-retry { background: var(--danger); color: white; }
 
         #finalSuccessMessage { display: none; padding: 20px; }
@@ -99,11 +99,11 @@
 
 <div class="container">
     <div class="card" id="setupUI">
-        <div class="header-logo">ORAL TASK II: WATER SPORTS</div>
+        <div class="header-logo">SPEAKING TASK 3</div>
         
         <div class="student-inputs">
             <div class="full-width">
-                <label>1. Select your Class / Selecciona tu curso:</label>
+                <label>1. Select your Class:</label>
                 <select id="sClass" onchange="updateStudentList()">
                     <option value="">-- Choose Class --</option>
                     <option value="7A">7° A</option>
@@ -112,7 +112,7 @@
                 </select>
             </div>
             <div class="full-width">
-                <label>2. Select your Name / Selecciona tu nombre:</label>
+                <label>2. Select your Name:</label>
                 <select id="studentName">
                     <option value="">-- Select Class First --</option>
                 </select>
@@ -120,21 +120,21 @@
         </div>
 
         <div class="prep-box">
-            <h3>🌊 Task Instructions:</h3>
+            <h3>🌊 Water Sports Task</h3>
             <p style="font-size: 0.95rem; line-height: 1.4;">
                 • Look at the pictures.<br>
                 • Identify the water sports.<br>
                 • Say which one you <b>like</b> and <b>don't like</b> + reasons.<br>
                 • Minimum time: <b>1:30 minutes</b>.
             </p>
-            <img src="https://raw.githubusercontent.com/mariavalenzuela-LabSession/Speaking-Task-3/bf1aed491e2dccecdaa4e4d79d53c717393a9d4d/Captura%20de%20pantalla%202026-04-24%20a%20la(s)%2012.45.19.png" class="main-task-img" alt="Water Sports">
+            <img src="https://raw.githubusercontent.com/mariavalenzuela-LabSession/Speaking-Task-3/bf1aed491e2dccecdaa4e4d79d53c717393a9d4d/Captura%20de%20pantalla%202026-04-24%20a%20la(s)%2012.45.19.png" class="main-task-img" alt="Task Image">
         </div>
 
         <div class="timer-box" id="timerDisplay">00:00</div>
         
-        <button id="startBtn" class="btn-start" onclick="initTest()">🎤 Start Recording / Empezar</button>
-        <button id="finishBtn" class="btn-finish btn-disabled" disabled onclick="stopAndFinish()">✔ Finish & Review / Terminar</button>
-        <p id="timerHint" style="font-size: 0.85rem; color: #64748b; display: none;">Talk until the timer reaches 01:30</p>
+        <button id="startBtn" class="btn-start" onclick="initTest()">🎤 Start Recording</button>
+        <button id="finishBtn" class="btn-finish btn-disabled" disabled onclick="stopAndFinish()">✔ Finish & Review</button>
+        <p id="timerHint" style="font-size: 0.85rem; color: #64748b; display: none;">Talk until 01:30</p>
     </div>
 
     <div id="reportArea" class="card" style="display:none;">
@@ -147,22 +147,22 @@
                 <button class="btn-retry" onclick="location.reload()">✖ Delete and Try Again</button>
             </div>
 
-            <button id="downloadBtn" class="btn-download" onclick="downloadAudio()">⬇ Download MP3 / Descargar archivo</button>
-            <p style="font-size: 0.9rem; color: var(--oxford-blue); font-weight: bold; margin-top: 10px;">
-                ⚠️ IMPORTANTE: Una vez descargado, sube el archivo a Google Classroom.
-            </p>
+            <button id="driveBtn" class="btn-drive" onclick="uploadToDrive()">Confirm & Send to Teacher</button>
+            <div id="status" style="font-weight: bold; margin-top: 10px;"></div>
         </div>
 
         <div id="finalSuccessMessage">
             <div class="icon-check">✓</div>
-            <h2>FILE DOWNLOADED!</h2>
-            <p>Ahora ve a <b>Google Classroom</b> y sube el archivo descargado a la tarea.</p>
-            <button style="background: #64748b; color:white; width: auto; padding: 12px 30px;" onclick="location.reload()">Record Another</button>
+            <h2>WELL DONE!</h2>
+            <p>Your Speaking Task 3 has been sent successfully.</p>
         </div>
     </div>
 </div>
 
 <script>
+// RECUERDA CAMBIAR ESTA URL POR LA TUYA DE GOOGLE APPS SCRIPT
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYJh8YRfdxdqwCo4cnU6hVUsWu4NnwJQtPV5yeVtUn-CCytM7uN8L8Ts78QLBKqqWPvA/exec";
+
 const studentsData = {
     "7A": ["Abarca Nuñez Florencia Ayelén", "Alfaro Cuevas Agustina Paz", "Argote Luza Amanda Leonor", "Arias Alegría Gustavo León", "Barrera León Antonia Paz", "Barriga Fernández Alex Eduardo", "Castillo Herrera Javier David", "Castro Mincone Emilia Alessandra", "Celis Canales Santiago", "Cortés Cabello Clemente Nicolás", "Del Río Fernández Santiago Isaac", "Fuentes Ramírez Alejandro Ignacio", "González Arriagada Joaquín Alonso", "González Yáñez Lorenzo Tomás", "Guerrero Bustamante Vicente", "Hinojosa Carrasco Victoria Antonia", "Hiplan Godoy Rafaella Francisca", "Iglesias Guerrero Maite Agustina", "Jiménez Monsalves Laura Elena", "Méndez Fernández Violeta Millaray", "Montenegro Uribarri Agustina Paz", "Muñoz Espinoza Mariano Emilio", "Neira Orellana Nicolás Andrés", "Norambuena Garcés Matías Clemente", "Núñez Zamora Florencia Antonia", "Pérez Escobar Emilia Andrea", "Ramírez Cartagena Mateo Ignacio", "Ramírez Oliva Amaro Andrés", "Reffer Horvath Ignacio Javier", "Retamal Leiva Maximiliano Antonio", "Reyes Bravo María Vicenta", "Reyes Urrea Alicia Cristina", "Sánchez Ramírez Cristobal Guillermo", "Veizaga Ruiz Darío Alonso", "Véliz Cortés Josefina Viviana"],
     "7B": ["Álvarez de Araya Almarza Bruno Ignacio", "Araya Espinoza Bárbara Yudich", "Araya Seguel Javier Ignacio", "Arias Alegría Felipe Roberto", "Arriaza Marsh Paz Emilia", "Barbaste Escalante Emma Leonor", "Barrera Jaque Trinidad Ignacia", "Calderón Palma José Agustín", "Campusano Pérez Francisca Almudena", "Castro Jara Matías Ignacio", "Contreras Arriagada Juan Pablo", "Cortés Díaz Joaquín Alonso", "Díaz Cortés Gaspar Ignacio", "Espinoza Cornejo Fernanda Isidora", "Figueroa Cárdenas Rafaela Sofía", "Figueroa Salazar Cristóbal Javier", "Hernández Leiva Emiliana Catalina", "Lasserre Rodriguez Clara Belén", "Maira Péndola Facundo Alfonso", "Martini Sutherland Isabella Francesca Rosetta", "Moraga Martínez Fernanda Paz", "Neyra Anabalón Vicente Alonso", "Olea Leiva Elisa Magdalena", "Olivares Sánchez Pablo Ignacio", "Orellana García Cristóbal Felipe", "Oviedo Obreque Camila Antonia", "Pacheco Palma Matías Ignacio", "Palma Péndola Gonzalo Alonzo", "Pérez Madariaga Nicolás Maximiliano", "Reyes Briones Lucas Javier", "Saldivia San Martín Emilio Alberto", "Urrutia González Amanda Florencia", "Valdenegro Román Cristóbal Tomás", "Valdés Vergara Gastón Emilio", "Valverde Véliz Santiago Alonso", "Vásquez Reyes María José Valentina", "Wood Corrales Andrew Benjamín Buchanan"],
@@ -172,13 +172,11 @@ const studentsData = {
 function updateStudentList() {
     const classSel = document.getElementById('sClass').value;
     const studentSel = document.getElementById('studentName');
-    studentSel.innerHTML = '<option value="">-- Select your Name --</option>';
-    
+    studentSel.innerHTML = '<option value="">-- Select Name --</option>';
     if(classSel && studentsData[classSel]) {
         studentsData[classSel].forEach(name => {
             let opt = document.createElement('option');
-            opt.value = name;
-            opt.textContent = name;
+            opt.value = name; opt.textContent = name;
             studentSel.appendChild(opt);
         });
     }
@@ -188,7 +186,6 @@ let mediaRecorder, chunks = [], timerInt, seconds = 0, audioBlob;
 
 async function initTest() {
     if(!document.getElementById('studentName').value) return alert("Please select your name!");
-    
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
@@ -198,26 +195,23 @@ async function initTest() {
             audioBlob = new Blob(chunks, { type: 'audio/mpeg' });
             document.getElementById('finalAudio').src = URL.createObjectURL(audioBlob);
         };
-
         mediaRecorder.start();
         document.body.classList.add('recording');
         document.getElementById('startBtn').style.display = 'none';
         document.getElementById('finishBtn').style.display = 'block';
         document.getElementById('timerHint').style.display = 'block';
-
         timerInt = setInterval(() => {
             seconds++;
             let m = Math.floor(seconds/60).toString().padStart(2,'0'), s = (seconds%60).toString().padStart(2,'0');
             document.getElementById('timerDisplay').textContent = `${m}:${s}`;
             if(seconds >= 90) {
                 const btn = document.getElementById('finishBtn');
-                btn.disabled = false;
-                btn.classList.remove('btn-disabled');
+                btn.disabled = false; btn.classList.remove('btn-disabled');
                 document.getElementById('timerHint').style.color = "#10b981";
-                document.getElementById('timerHint').innerText = "Perfect length! You can finish now.";
+                document.getElementById('timerHint').innerText = "Minimum time reached!";
             }
         }, 1000);
-    } catch (err) { alert("Error de micrófono: Por favor permite el acceso."); }
+    } catch (err) { alert("Mic error: Access denied."); }
 }
 
 function stopAndFinish() {
@@ -230,28 +224,29 @@ function stopAndFinish() {
     if(mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(t => t.stop());
 }
 
-function downloadAudio() {
-    const studentName = document.getElementById('studentName').value;
-    const studentClass = document.getElementById('sClass').value;
-    // Formatear nombre para el archivo: Reemplazar espacios por guiones bajos
-    const formattedName = studentName.replace(/ /g, '_');
-    const fileName = `${studentClass}_${formattedName}_OralTask2.mp3`;
-    
-    const url = URL.createObjectURL(audioBlob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    
-    // Pequeño retardo para asegurar la descarga antes de cambiar la vista
-    setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        document.getElementById('submissionControls').style.display = 'none';
-        document.getElementById('finalSuccessMessage').style.display = 'block';
-    }, 500);
+async function uploadToDrive() {
+    const driveBtn = document.getElementById('driveBtn');
+    driveBtn.disabled = true;
+    document.getElementById('status').textContent = "⏳ Uploading to teacher's Drive...";
+    const reader = new FileReader();
+    reader.readAsDataURL(audioBlob);
+    reader.onloadend = async () => {
+        const base64data = reader.result.split(',')[1];
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST", mode: "no-cors",
+                body: JSON.stringify({
+                    base64: base64data,
+                    filename: `${document.getElementById('sClass').value}_${document.getElementById('studentName').value}_Speaking3.mp3`
+                })
+            });
+            document.getElementById('submissionControls').style.display = 'none';
+            document.getElementById('finalSuccessMessage').style.display = 'block';
+        } catch (e) {
+            alert("Error sending file.");
+            driveBtn.disabled = false;
+        }
+    };
 }
 </script>
 </body>
